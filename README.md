@@ -1,22 +1,112 @@
 # F&O Market Analysis Tool
 
-## Data Flow Architecture
+## Technical Architecture & Data Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     %% Define styles
-    classDef source fill:#ffddff,stroke:#333,stroke-width:1px
-    classDef process fill:#e6e6ff,stroke:#333,stroke-width:1px
+    classDef api fill:#f9f9f9,stroke:#333,stroke-width:1px
+    classDef python fill:#306998,stroke:#333,stroke-width:1px,color:#fff
     classDef storage fill:#e6ffe6,stroke:#333,stroke-width:1px
-    classDef analysis fill:#ffe6e6,stroke:#333,stroke-width:1px
+    classDef transform fill:#FFD43B,stroke:#333,stroke-width:1px
+    classDef db fill:#00758F,stroke:#333,stroke-width:1px,color:#fff
 
-    %% Data Sources
-    subgraph Sources [NSE Data Sources]
-        direction LR
-        A1["📊 NSE Bhavcopy"]:::source
-        A2["📈 NSE Volatility"]:::source
-        A3["⚠️ NSE Security Ban"]:::source
+    %% NSE API Layer
+    subgraph NSE [🏢 NSE Data APIs]
+        direction TB
+        API1["🔄 /api/bhav-copy
+{date, type: 'FO'}"]:::api
+        API2["📊 /api/volatility
+{symbol, expiry}"]:::api
+        API3["⚠️ /api/security-ban
+{date}"]:::api
     end
+
+    %% API Communication
+    subgraph FETCH [API Communication]
+        direction TB
+        R1["🔐 Authentication
+(API Key + Headers)"]:::api
+        R2["🌐 HTTPS Requests
+(aiohttp/requests)"]:::api
+        R3["📡 Rate Limiting
+(Max 5 req/sec)"]:::api
+        
+        R1 --> R2
+        R2 --> R3
+    end
+
+    %% Python Processing
+    subgraph PYTHON [🐍 Python Data Pipeline]
+        direction TB
+        P1["📥 Data Fetcher
+Async Downloader"]:::python
+        P2["🔄 Transformer
+pandas + numpy"]:::python
+        P3["📊 Analytics Engine
+scipy + ta-lib"]:::python
+        P4["💾 Data Persistence
+SQLAlchemy ORM"]:::python
+
+        P1 --> |"DataFrame"| P2
+        P2 --> |"Processed Data"| P3
+        P3 --> |"Analysis Results"| P4
+    end
+
+    %% Storage Solutions
+    subgraph STORE [Data Storage]
+        direction TB
+        S1[("MySQL DB
+(Partitioned Tables)")]:::db
+        S2["Parquet Files
+(Columnar Storage)"]:::storage
+        S3["CSV Backups
+(Daily Snapshots)"]:::storage
+    end
+
+    %% Connections with dotted lines and labels
+    API1 -..->|"GET Request"| R1
+    API2 -..->|"GET Request"| R1
+    API3 -..->|"GET Request"| R1
+    
+    R3 ==>|"JSON Response"| P1
+    
+    P4 --> S1
+    P4 --> S2
+    P4 --> S3
+
+    %% Styles for subgraphs
+    style NSE fill:#f8f8f8,stroke:#333,stroke-width:1px
+    style FETCH fill:#f5f5f5,stroke:#333,stroke-width:1px
+    style PYTHON fill:#FFDE57,stroke:#333,stroke-width:1px
+    style STORE fill:#f5fff5,stroke:#333,stroke-width:1px
+```
+
+### Technical Implementation Details
+
+1. **NSE API Integration**
+   - RESTful API endpoints
+   - Authentication using API keys
+   - Rate limiting compliance
+   - Error handling & retries
+
+2. **Python Data Pipeline**
+   - Asynchronous data fetching
+   - Pandas for data transformation
+   - NumPy for numerical computations
+   - SQLAlchemy for database operations
+
+3. **Data Transformations**
+   - Clean missing values
+   - Calculate technical indicators
+   - Compute volatility metrics
+   - Generate trading signals
+
+4. **Storage Strategy**
+   - Partitioned MySQL tables
+   - Parquet for analytics
+   - CSV for data backups
+   - Data versioning
 
     %% Processing Pipeline
     subgraph Process [Data Processing]
