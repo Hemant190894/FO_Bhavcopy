@@ -4,50 +4,55 @@
 
 ```mermaid
 flowchart TD
-    classDef source fill:#f9f,stroke:#333,stroke-width:2px
-    classDef process fill:#bbf,stroke:#333,stroke-width:2px
-    classDef storage fill:#bfb,stroke:#333,stroke-width:2px
-    classDef analysis fill:#fbb,stroke:#333,stroke-width:2px
+    %% Define styles
+    classDef source fill:#ffddff,stroke:#333,stroke-width:1px
+    classDef process fill:#e6e6ff,stroke:#333,stroke-width:1px
+    classDef storage fill:#e6ffe6,stroke:#333,stroke-width:1px
+    classDef analysis fill:#ffe6e6,stroke:#333,stroke-width:1px
 
-    subgraph NSE [🌐 NSE Data Sources]
-        direction TB
-        A1["📊 Bhavcopy\n(F&O Trading Data)"]:::source
-        A2["📈 Volatility Data\n(Daily Metrics)"]:::source
-        A3["⚠️ Security Ban\n(Trading Restrictions)"]:::source
+    %% Data Sources
+    subgraph Sources [NSE Data Sources]
+        direction LR
+        A1["📊 NSE Bhavcopy"]:::source
+        A2["📈 NSE Volatility"]:::source
+        A3["⚠️ NSE Security Ban"]:::source
     end
 
-    subgraph ETL [🔄 Data Processing Pipeline]
+    %% Processing Pipeline
+    subgraph Process [Data Processing]
         direction TB
-        P1["⬇️ Download & Validate\n(HTTP/ZIP)"]:::process
-        P2["🔍 Data Cleaning\n(Missing Values, Outliers)"]:::process
-        P3["📊 Feature Engineering\n(Percentiles, Signals)"]:::process
-        P4["🔄 Data Integration\n(Join & Transform)"]:::process
+        P1["⬇️ Download & Validate"]:::process
+        P2["🔍 Data Cleaning"]:::process
+        P3["📊 Feature Engineering"]:::process
+        P4["🔄 Data Integration"]:::process
 
         P1 --> P2
         P2 --> P3
         P3 --> P4
     end
 
-    subgraph Store [💾 Data Storage Layer]
-        direction TB
-        S1[("🗄️ MySQL DB\n(Partitioned)")]:::storage
-        S2["📁 CSV Files\n(Daily Backup)"]:::storage
-        S3["📦 Parquet Files\n(Analytics)"]:::storage
+    %% Storage Layer
+    subgraph Storage [Data Storage]
+        direction LR
+        S1[("MySQL DB")]:::storage
+        S2["CSV Files"]:::storage
+        S3["Parquet Files"]:::storage
     end
 
-    subgraph Analytics [📊 Analysis & Insights]
-        direction TB
-        AN1["📊 Volume Patterns\n(Trading Activity)"]:::analysis
-        AN2["📈 Volatility Analysis\n(Risk Metrics)"]:::analysis
-        AN3["🎯 Trading Signals\n(Buy/Sell)"]:::analysis
+    %% Analysis Layer
+    subgraph Analysis [Market Analysis]
+        direction LR
+        AN1["Volume Analysis"]:::analysis
+        AN2["Volatility Trends"]:::analysis
+        AN3["Trading Signals"]:::analysis
     end
 
-    %% Connections with labels
-    A1 --> |"Daily Data\nZIP Format"| P1
-    A2 --> |"Real-time\nMetrics"| P1
-    A3 --> |"Trading\nUpdates"| P1
+    %% Connections
+    A1 --> |"Daily Data"| P1
+    A2 --> |"Real-time"| P1
+    A3 --> |"Trading"| P1
 
-    P4 --> |"Structured\nData"| S1
+    P4 --> |"Structured"| S1
     P4 --> |"Backup"| S2
     P4 --> |"Analytics"| S3
 
@@ -55,10 +60,11 @@ flowchart TD
     S1 --> |"Analysis"| AN2
     S1 --> |"Signals"| AN3
 
-    style NSE fill:#f9f9ff,stroke:#333,stroke-width:2px
-    style ETL fill:#f0f0ff,stroke:#333,stroke-width:2px
-    style Store fill:#f0fff0,stroke:#333,stroke-width:2px
-    style Analytics fill:#fff0f0,stroke:#333,stroke-width:2px
+    %% Subgraph styles
+    style Sources fill:#fff5ff,stroke:#333,stroke-width:1px
+    style Process fill:#f5f5ff,stroke:#333,stroke-width:1px
+    style Storage fill:#f5fff5,stroke:#333,stroke-width:1px
+    style Analysis fill:#fff5f5,stroke:#333,stroke-width:1px
 ```
 
 ### Process Flow Description
